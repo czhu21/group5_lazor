@@ -1,3 +1,5 @@
+# Need to check if this works for "adjoining blocks"
+# This does work for multiple lazers, multiple blocks though.
 import operator
 
 class Lazor():
