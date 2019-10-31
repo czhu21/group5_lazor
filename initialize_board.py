@@ -110,9 +110,9 @@ def readBoard(filename):
                 print(line)
                 x = int(line[1])
                 y = int(line[2])
-                dx = int(line[3])
-                dy = int(line[4])
-                lasers.append((x, y, dx, dy))
+                vx = int(line[3])
+                vy = int(line[4])
+                lasers.append((x, y, vx, vy))
                 
 
             elif firstChar.upper() == 'P':
