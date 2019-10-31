@@ -65,7 +65,7 @@ def readBoard(filename):
 
     # Read through grid, grabbing special characters
     blocks = [None, None, None]
-    lasers = False
+    lasers = []
     targets = []
     f.seek(0)
     start = False
@@ -105,14 +105,15 @@ def readBoard(filename):
                     # Initialize refract block
 
             elif firstChar == 'L':
-                lasers = True
+                # lasers = True
                 line = i.split()
-                # Initialize lazor
-                # x = int(line[1])
-                # y = int(line[2])
-                # vx = int(line[3])
-                # vy = int(line[4])
-                pass
+                print(line)
+                x = int(line[1])
+                y = int(line[2])
+                dx = int(line[3])
+                dy = int(line[4])
+                lasers.append((x, y, dx, dy))
+                
 
             elif firstChar.upper() == 'P':
                 line = i.split()
@@ -174,7 +175,7 @@ def readBoard(filename):
     # Get grid width
     w = len(initGrid[0])
 
-    return(initGrid, gridAsList, blocks, openSpaces, targets, w)
+    return(initGrid, gridAsList, blocks, lasers, openSpaces, targets, w)
 
 
 # def get_nsew_coords(grid):
@@ -235,13 +236,14 @@ def solveBoard(plist, gridAsList, w):
 
 
 if __name__ == "__main__":
-    bfile = '.\\bff_files\\yarn_5.bff'
+    bfile = 'bff_files/yarn_5.bff'
     filename = bfile.split('\\')[-1]
     print('-=-' * 17)
     print('Solving board: ' + filename)
     t0 = time.time()
+    print(readBoard('bff_files/yarn_5.bff'))
 
-    initGrid, gridAsList, blocks, openSpaces, targets, w = readBoard(bfile)
+    initGrid, gridAsList, blocks, lasers, openSpaces, targets, w = readBoard(bfile)
 
     plist = get_permute_list(gridAsList, blocks, openSpaces)
     solveBoard(plist, gridAsList, w)

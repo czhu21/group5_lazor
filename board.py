@@ -15,9 +15,12 @@ grid_stop = input_lines.index('GRID STOP')
 lasers = []
 for line in input_lines:
 	if line[0] == 'L':
-		lasers.append(line[1:])
+		print(line)
+		lasers.append(line[2:])
 
 print(lasers)
+res = [tuple(map(int, sub.split(' '))) for sub in lasers]
+print(res)
 
 blocks = []
 for line in input_lines:
@@ -32,7 +35,7 @@ for line in input_lines:
 		targets.append(line[2:])
 res = [tuple(map(int, sub.split(' '))) for sub in targets]
 print(targets)
-print(res)
+# print(res)
 
 grid_input = input_lines[grid_start+1:grid_stop]
 
