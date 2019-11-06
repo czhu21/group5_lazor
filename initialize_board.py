@@ -11,6 +11,7 @@ from math import factorial
 from functools import reduce
 from copy import deepcopy
 import time
+from lazor_print_soln import text_soln
 
 # Initialize block reference information
 valid_grid = ['o', 'x', 'a', 'b', 'c']
@@ -105,15 +106,13 @@ def readBoard(filename):
                     # Initialize refract block
 
             elif firstChar == 'L':
-                # lasers = True
                 line = i.split()
-                print(line)
+                # Initialize lazor
                 x = int(line[1])
                 y = int(line[2])
-                vx = int(line[3])
-                vy = int(line[4])
-                lasers.append((x, y, vx, vy))
-                
+                dx = int(line[3])
+                dy = int(line[4])
+                lasers.append((x, y, dx, dy))
 
             elif firstChar.upper() == 'P':
                 line = i.split()
@@ -174,8 +173,9 @@ def readBoard(filename):
     # init_NS, init_EW = get_nsew_coords(initGrid)
     # Get grid width
     w = len(initGrid[0])
+    h = len(initGrid)
 
-    return(initGrid, gridAsList, blocks, lasers, openSpaces, targets, w)
+    return(initGrid, gridAsList, blocks, openSpaces, lasers, targets, w, h)
 
 
 # def get_nsew_coords(grid):
@@ -208,11 +208,12 @@ def get_permute_list(gridAsList, blocks, openSpaces):
     return(permute_list)
 
 
-def solveBoard(plist, gridAsList, w):
+def generateBoards(plist, gridAsList, w):
     '''
     '''
     # print(gridAsList)
     # print(plist)
+    tries = 0
 
     for i in multiset_permutations(plist):
         dictOfBlocks = {}
@@ -226,27 +227,38 @@ def solveBoard(plist, gridAsList, w):
         # print(temp)
 
         mat = [temp[i:i+w] for i in range(0, len(temp), w)]
+        # print(mat)
 
         for i in range(len(mat)):
             for j in range(len(mat[0])):
                 cell = mat[i][j].lower()
                 if cell in special_blocks.keys():
-                    dictOfBlocks[(i, j)] = cell.upper()
-        #print(dictOfBlocks)
+                    dictOfBlocks[(j, i)] = cell.upper()
+        tries += 1
+        # print(dictOfBlocks)
+    # print(tries)
+    return(tries)
 
 
 if __name__ == "__main__":
-    bfile = 'bff_files/yarn_5.bff'
+    # TEMPORARY SOLUTION FOR YARN_5, REPLACE WITH ACTUAL SOLUTION LATER
+    soln = {(0, 0): 'A', (1, 0): 'B', (3, 0): 'A', (4, 0): 'A', (0, 1): 'A', (1, 1): 'A', (4, 1): 'A', (4, 2): 'A', (0, 3): 'A', (0, 5): 'B'}
+    # KEEP FILE AS YARN_5 FOR NOW
+    bfile = '.\\bff_files\\yarn_5.bff'
     filename = bfile.split('\\')[-1]
     print('-=-' * 17)
     print('Solving board: ' + filename)
     t0 = time.time()
-    print(readBoard('bff_files/yarn_5.bff'))
 
-    initGrid, gridAsList, blocks, lasers, openSpaces, targets, w = readBoard(bfile)
-
+    initGrid, gridAsList, blocks, openSpaces, \
+        lasers, targets, w, h = readBoard(bfile)
+    solnGrid = initGrid
     plist = get_permute_list(gridAsList, blocks, openSpaces)
-    solveBoard(plist, gridAsList, w)
+    tries = generateBoards(plist, gridAsList, w)
+    tf = time.time()
+    runtime = tf - t0
+
+    print('Run finished. Time: %0.5f sec' % (runtime))
     print('-=-' * 17)
-    print('Run finished. Time: %s sec' % (time.time() - t0))
-    print('-=-' * 17)
+
+    text_soln(filename, initGrid, soln, tries, runtime)
