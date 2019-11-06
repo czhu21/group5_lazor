@@ -102,6 +102,15 @@ if __name__ == '__main__':
                 condition = True
 
         print(lazor.path)
+        
+        # How to reduce time
+        '''
+        1) Infinite loop max iteration limit. Find patters in the "inifinite loop". But that will lead to searching. What is the maximum max value that we can have ?
+        2) Do not "save value" and then pass it. Pass it as it is.
+        3) Minimizde search operations (Rather than searching for NS / EW, this code directly interacts with the Blocks)
+        4) Minimize FLOPS / any arithmetic operations
+        5) Minimize any logical operations
+        '''
 
 
 
