@@ -11,7 +11,6 @@ from math import factorial
 from functools import reduce
 from copy import deepcopy
 import time
-from lazor_print_soln import text_soln
 
 # Initialize block reference information
 valid_grid = ['o', 'x', 'a', 'b', 'c']
@@ -106,13 +105,15 @@ def readBoard(filename):
                     # Initialize refract block
 
             elif firstChar == 'L':
+                # lasers = True
                 line = i.split()
-                # Initialize lazor
+                print(line)
                 x = int(line[1])
                 y = int(line[2])
-                dx = int(line[3])
-                dy = int(line[4])
-                lasers.append((x, y, dx, dy))
+                vx = int(line[3])
+                vy = int(line[4])
+                lasers.append((x, y, vx, vy))
+                
 
             elif firstChar.upper() == 'P':
                 line = i.split()
@@ -173,9 +174,8 @@ def readBoard(filename):
     # init_NS, init_EW = get_nsew_coords(initGrid)
     # Get grid width
     w = len(initGrid[0])
-    h = len(initGrid)
 
-    return(initGrid, gridAsList, blocks, openSpaces, lasers, targets, w, h)
+    return(initGrid, gridAsList, blocks, lasers, openSpaces, targets, w)
 
 
 # def get_nsew_coords(grid):
@@ -208,12 +208,12 @@ def get_permute_list(gridAsList, blocks, openSpaces):
     return(permute_list)
 
 
-def generateBoards(plist, gridAsList, w):
+def solveBoard(plist, gridAsList, w):
     '''
     '''
     # print(gridAsList)
     # print(plist)
-    tries = 0
+    listOfDicts = []
 
     for i in multiset_permutations(plist):
         dictOfBlocks = {}
@@ -227,38 +227,158 @@ def generateBoards(plist, gridAsList, w):
         # print(temp)
 
         mat = [temp[i:i+w] for i in range(0, len(temp), w)]
-        # print(mat)
 
         for i in range(len(mat)):
             for j in range(len(mat[0])):
                 cell = mat[i][j].lower()
                 if cell in special_blocks.keys():
                     dictOfBlocks[(j, i)] = cell.upper()
-        tries += 1
-        # print(dictOfBlocks)
-    # print(tries)
-    return(tries)
+        listOfDicts.append(dictOfBlocks)
+    return listOfDicts
+
+
+class Block:
+
+    def __init__(self, ctr_x, ctr_y):
+        self.ctr_x = ctr_x
+        self.ctr_y = ctr_y
+
+    def __call__(self, typ):
+        self.typ = typ
+
+    def interact(self, cx, cy, dx, dy):
+
+        typ = self.typ
+        if typ == 'N':
+            return [(cx + dx, cy + dy, dx, dy)]
+        elif typ == 'A':
+            if cx % 2 == 1:
+                return [(cx, cy, dx, -dy)]
+            else:
+                return [(cx, cy, -dx, dy)]
+        elif typ == 'B':
+            return 'END'
+        elif typ == 'C':
+            if cx % 2 == 1:
+                return [(cx, cy, dx, -dy), (cx + dx, cy + dy, dx, dy)]
+            else:
+                return [(cx, cy, -dx, dy), (cx + dx, cy + dy, dx, dy)]
+        else:
+            pass
+
+
+class Lazor:
+    def __init__(self, cx, cy, dx, dy):
+        self.cx = cx
+        self.cy = cy
+        self.dx = dx
+        self.dy = dy
+        self.path = []
+
+
+def boardCheck(width, height, listOfLazors, dictOfBlocks, targetList):
+    blockList = [[0 for i in range(2 * width + 1)] for j in range(2 * height + 1)]
+
+    # Initialize all the blocks to 'N' which are normal / "let is pass" blocks
+    listOfHits = []
+    
+    for i in range(width):
+        for j in range(height):
+            blockList[2 * j + 1][2 * i + 1] = Block(2 * j + 1, 2 * i + 1)
+            blockList[2 * j + 1][2 * i + 1].typ = 'N'
+
+    for blk in dictOfBlocks:
+        ctr_x = 2 * blk[0] + 1
+        ctr_y = 2 * blk[1] + 1
+        print(ctr_y, ctr_x)
+        blockList[ctr_y][ctr_x].typ = dictOfBlocks[blk]
+
+    # print(blockList[7][3].typ)
+
+
+    # Lazor information initialize
+    for lazor in listOfLazors:
+        lazor.path.append((lazor.cx, lazor.cy, lazor.dx, lazor.dy))
+
+        condition = False
+        while condition is False:
+
+            cx = lazor.path[-1][0]
+            cy = lazor.path[-1][1]
+            dx = lazor.path[-1][2]
+            dy = lazor.path[-1][3]
+
+            if cx + dx < 0 or cx + dx > 2 * width or cy + dy < 0 or cy + dy > 2 * height:
+                break
+
+            if cx % 2 == 0:
+                new = blockList[cy][cx + dx].interact(cx, cy, dx, dy)
+            else:
+                print(cy, cx)
+                new = blockList[cy + dy][cx].interact(cx, cy, dx, dy)
+
+
+            if new == 'END':
+                break
+            else:
+                lazor.path.append(new[0])
+
+            if len(new) == 2:
+                listOfLazors.append(Lazor(new[1][0], new[1][1], new[1][2], new[1][3]))
+
+            # Break out of the for loop if the lazor reaches the boundary
+            if new[0][0] + new[0][2] > 2 * width or new[0][0] + new[0][2] < 0 or new[0][1] + new[0][3] > 2 * height or new[0][1] + new[0][3] < 0:
+                condition = True
+
+            # Break out of the loop if the lazor goes into an infinite loop (max points = 100)
+            if len(lazor.path) > 100:
+                condition = True
+
+        for hits in lazor.path:
+            listOfHits.append((hits[0], hits[1]))
+        
+
+    condition = True
+    for target in targetList:
+        if target not in listOfHits:
+            condition = False
+
+    return condition
 
 
 if __name__ == "__main__":
-    # TEMPORARY SOLUTION FOR YARN_5, REPLACE WITH ACTUAL SOLUTION LATER
-    soln = {(0, 0): 'A', (1, 0): 'B', (3, 0): 'A', (4, 0): 'A', (0, 1): 'A', (1, 1): 'A', (4, 1): 'A', (4, 2): 'A', (0, 3): 'A', (0, 5): 'B'}
-    # KEEP FILE AS YARN_5 FOR NOW
-    bfile = '.\\bff_files\\yarn_5.bff'
+    bfile = 'bff_files/tiny_5.bff'
     filename = bfile.split('\\')[-1]
     print('-=-' * 17)
     print('Solving board: ' + filename)
     t0 = time.time()
+    print(readBoard('bff_files/tiny_5.bff'))
 
-    initGrid, gridAsList, blocks, openSpaces, \
-        lasers, targets, w, h = readBoard(bfile)
-    solnGrid = initGrid
+    initGrid, gridAsList, blocks, lasers, openSpaces, targets, w = readBoard(bfile)
+
     plist = get_permute_list(gridAsList, blocks, openSpaces)
-    tries = generateBoards(plist, gridAsList, w)
-    tf = time.time()
-    runtime = tf - t0
+    listOfDicts = solveBoard(plist, gridAsList, w)
+    print(len(listOfDicts))
 
-    print('Run finished. Time: %0.5f sec' % (runtime))
+    width = 3
+    height = 3
+    # Lazor list initializing
+    listOfLazors = []
+    listOfLazors.append(Lazor(4, 5, -1, -1))
+
+    targetList = [(1, 2), (6, 3)]
+
+    for dictOfBlocks in listOfDicts:
+        print(dictOfBlocks)
+        result = boardCheck(width, height, listOfLazors, dictOfBlocks, targetList)
+
+        if result == True:
+            print('True')
+            print(dictOfBlocks)
+            break
+
+
+
     print('-=-' * 17)
-
-    text_soln(filename, initGrid, soln, tries, runtime)
+    print('Run finished. Time: %s sec' % (time.time() - t0))
+    print('-=-' * 17)
