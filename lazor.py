@@ -3,6 +3,11 @@
 # Group 5
 # Lazor Board Solver
 
+'''
+This imports all of the modules/functions involved in the lazor solver
+Runs the functions necessary to solve the board
+'''
+
 from simulate_board import get_solution
 from print_solution import text_soln
 from initialize_board import readBoard, nperms
@@ -28,5 +33,12 @@ if __name__ == "__main__":
 
     text_soln(filename, initGrid, soln, tries, possible, (time.time()-t0))
     runtime = time.time() - t0
-    print('Solution published. Total time: %0.5f sec' % (runtime))
+    print('Solution published...')
+
+    #################################
+    # LINCOLN: image.py run goes here
+    #################################
+
+    print('Solution image created...')
+    print('DONE! Total time: %0.5f sec' % (runtime))
     print('-=-' * 17)
