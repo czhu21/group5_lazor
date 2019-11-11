@@ -13,16 +13,17 @@ if __name__ == "__main__":
     t0 = time.time()
 
     filename, initGrid, gridAsList, dictOfBlocks, openSpaces, \
-        lasers, targetList, width, height = readBoard()
+        lasers, targetList, width, height, empty = readBoard()
     print('Input file read finished...')
-
+    print(empty)
     plist = get_permute_list(gridAsList, dictOfBlocks, openSpaces)
     possible = nperms(plist)
 
     listOfDicts = generateBoards(plist, gridAsList, width)
     print('Board generation finished...')
 
-    soln, tries = get_solution(listOfDicts, width, height, lasers, dictOfBlocks, targetList)
+    soln, tries = get_solution(listOfDicts, width,
+                               height, lasers, dictOfBlocks, targetList)
     print('Board solution found...')
 
     text_soln(filename, initGrid, soln, tries, possible, (time.time()-t0))

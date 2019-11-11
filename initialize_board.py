@@ -147,6 +147,7 @@ def readBoard():
     # Convert grid to single list, get num of available spaces
     openSpaces = 0
     gridAsList = []
+    empty = []
     for i in range(len(initGrid)):
         for j in range(len(initGrid[0])):
             initGrid[i][j] = initGrid[i][j].strip()
@@ -163,6 +164,8 @@ def readBoard():
 
             if initGrid[i][j] == 'o':
                 openSpaces += 1
+            if initGrid[i][j] == 'x':
+                empty.append((j, i))
 
     # init_NS, init_EW = get_nsew_coords(initGrid)
     # Get grid width
@@ -170,7 +173,7 @@ def readBoard():
     h = len(initGrid)
 
     return (filename, initGrid, gridAsList, blocks,
-            openSpaces, lasers, targets, w, h)
+            openSpaces, lasers, targets, w, h, empty)
 
 
 if __name__ == "__main__":
