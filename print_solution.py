@@ -2,11 +2,42 @@
 # Lazor Project
 # Group 5
 
+'''
+This file is responsible for printing the solution board
+The result is a .txt file containing the answer
+'''
+
 from copy import deepcopy
 import datetime
 
 
 def text_soln(filename, initGrid, soln, tries, possible, runtime):
+    '''
+    Write the solution board to a file with some other information
+
+    **Parameters**
+
+        filename: string
+            The name of the board we are solving
+        initGrid: list
+            A list of lists; the given empty problem board
+        soln: dictionary
+            A dictionary containing the positions of the pieces
+            for the solution board. Keys are the coordinates,
+            values are the block type at the coordinates
+        tries: int
+            The number of tries it took to find the answer
+        possible: int
+            The number of possible boards that could have been
+            made from the inputs
+        runtime: float
+            The amount of time it took to get the answer
+
+    **Returns**
+
+        NOTHING
+    '''
+
     fname = filename.split('.')[0]
 
     solnGrid = deepcopy(initGrid)
