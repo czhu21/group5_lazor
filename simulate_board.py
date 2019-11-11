@@ -1,6 +1,8 @@
 # LAZOR
 # simulate_board.py
 
+import sys
+
 # Initialize block reference information
 valid_grid = ['o', 'x', 'a', 'b', 'c']
 special_blocks = {
@@ -140,6 +142,11 @@ def get_solution(listOfDicts, w, h, lasers, dictOfBlocks, targetList):
             # print(dictOfBlocks)
             soln = dictOfBlocks
             break
+
+    if soln is None:
+        print("No possible solution for the given parameters!")
+        sys.exit()
+
     return(soln, tries)
 
 
