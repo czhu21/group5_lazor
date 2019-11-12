@@ -34,6 +34,7 @@ Solution image created...
 DONE! Total time: 35.20892 sec
 ```
 
+The solution will be written to a text file in the bff_files directory.
 The solution image will be found in "image_files/solution_images".
 
 
