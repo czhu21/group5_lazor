@@ -8,7 +8,7 @@ Download or clone this repository to your machine.
 
 ### Solving
 
-The lazor.py file contains the actual solver. bff_files contains .bff files which are plaintext representations of a given Lazors board. To solve a given board, execute the following: 
+The lazor.py file contains the actual solver. bff_files contains .bff files which are plaintext representations of a given Lazors board. To solve a given board, execute the following (or run whatever version of python you have): 
 
 ```
 $ python3 lazor.py
