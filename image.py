@@ -7,7 +7,7 @@ import glob
 import os
 from simulate_board import Lazor
 
-def placeblocks(dictofblocks, backgroundimage, width, height, empty):
+def place_blocks(dictofblocks, backgroundimage, width, height, empty):
 	bg_h = height * 81
 	bg_w = width * 81
 	background = Image.new('RGB', (bg_w, bg_h), (96, 86, 89))
@@ -50,7 +50,7 @@ def placeblocks(dictofblocks, backgroundimage, width, height, empty):
 		background.save('image_files/board_images/background.png')
 
 
-def plotlazorpath(listOfLazors, width, height, lasers, targetList):
+def plot_lazor_path(listOfLazors, width, height, lasers, targetList):
 	lazorlist = []
 	for lazor in lasers:
 		lazorlist.append((lazor[0], lazor[1]))

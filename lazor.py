@@ -13,7 +13,7 @@ from print_solution import text_soln
 from initialize_board import readBoard, nperms
 from board_generator import get_permute_list, generateBoards
 import time
-from image import placeblocks, plotlazorpath
+from image import place_blocks, plot_lazor_path
 
 if __name__ == "__main__":
     t0 = time.time()
@@ -36,12 +36,8 @@ if __name__ == "__main__":
     runtime = time.time() - t0
     print('Solution published...')
 
-    #################################
-    # LINCOLN: image.py run goes here
-    #################################
-
-    placeblocks(soln, 'image_files/board_images/background.png', width, height, empty)
-    plotlazorpath(listOfLazors, width, height, lasers, targetList)
+    place_blocks(soln, 'image_files/board_images/background.png', width, height, empty)
+    plot_lazor_path(listOfLazors, width, height, lasers, targetList)
 
     print('Solution image created...')
     print('DONE! Total time: %0.5f sec' % (runtime))
