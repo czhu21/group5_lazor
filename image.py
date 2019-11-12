@@ -1,3 +1,14 @@
+# Software Carpentry
+# Group Project - Lazor Game
+# Group 5: Aditiya Suru, Casey Zhu, Lincoln Kartchner
+# image.py
+
+'''
+This code reads in output from the simulate_board.py code
+and converts it into a .png image representing the solution
+to the given board.
+'''
+
 from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -7,12 +18,21 @@ import glob
 import os
 from simulate_board import Lazor
 
-def place_blocks(dictofblocks, backgroundimage, width, height, empty):
+def place_blocks(dictofblocks, width, height, empty):
+	'''
+	place_blocks will generate a background image that will
+	be used by the next function plot_lazor_path.
+
+	** Parameters **
+
+		dictofblocks: dictionary
+			the dictionary containing the solution
+			positions of all the given blocks
+		backgroundimage
+	'''
 	bg_h = height * 81
 	bg_w = width * 81
 	background = Image.new('RGB', (bg_w, bg_h), (96, 86, 89))
-	background.save("image_files/board_images/background.png")
-	background = Image.open(backgroundimage)
 	absorb = Image.open('image_files/board_images/absorb.png')
 	reflect = Image.open('image_files/board_images/reflect.png')
 	refract = Image.open('image_files/board_images/refract.png')

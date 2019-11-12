@@ -43,8 +43,7 @@ if __name__ == "__main__":
 
 
     # Generate solution image
-    place_blocks(
-        soln, 'image_files/board_images/background.png', width, height, empty)
+    place_blocks(soln, width, height, empty)
     plot_lazor_path(listOfLazors, width, height, lasers, targetList, filename)
 
 
