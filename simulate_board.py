@@ -74,18 +74,18 @@ def boardCheck(width, height, listOfLazors, dictOfBlocks, targetList):
         condition = False
         while not condition:
 
-            # cx = lazor.path[-1][0][0]
-            # cy = lazor.path[-1][0][1]
-            # dx = lazor.path[-1][1][0]
-            # dy = lazor.path[-1][1][1]
+            cx = lazor.path[-1][0][0]
+            cy = lazor.path[-1][0][1]
+            dx = lazor.path[-1][1][0]
+            dy = lazor.path[-1][1][1]
 
-            if lazor.path[-1][0][0] + lazor.path[-1][1][0] < 0 or lazor.path[-1][0][0] + lazor.path[-1][1][0] > 2 * width or lazor.path[-1][0][1] + lazor.path[-1][1][1] < 0 or lazor.path[-1][0][1] + lazor.path[-1][1][1] > 2 * height:
+            if cx + dx < 0 or cx + dx > 2 * width or cy + dy < 0 or cy + dy > 2 * height:
                 break
 
-            if lazor.path[-1][0][0] % 2 == 0:
-                new = blockList[lazor.path[-1][0][1]][lazor.path[-1][0][0] + lazor.path[-1][1][0]].interact((lazor.path[-1][0][0], lazor.path[-1][0][1]), (lazor.path[-1][1][0], lazor.path[-1][1][1]))
+            if cx % 2 == 0:
+                new = blockList[cy][cx + dx].interact((cx, cy), (dx, dy))
             else:
-                new = blockList[lazor.path[-1][0][1] + lazor.path[-1][1][1]][lazor.path[-1][0][0]].interact((lazor.path[-1][0][0], lazor.path[-1][0][1]), (lazor.path[-1][1][0], lazor.path[-1][1][1]))
+                new = blockList[cy + dy][cx].interact((cx, cy), (dx, dy))
 
             if new == 'END':
                 break
@@ -132,6 +132,10 @@ def get_solution(listOfDicts, w, h, lasers, dictOfBlocks, targetList):
         listOfLazors.append(Lazor((i[0], i[1]), (i[2], i[3])))
 
     for dictOfBlocks in listOfDicts:
+        listOfLazors = []
+        for i in lasers:
+            listOfLazors.append(Lazor((i[0], i[1]), (i[2], i[3])))
+        
         for lazor in listOfLazors:
             lazor.path = []
         tries += 1
@@ -147,7 +151,7 @@ def get_solution(listOfDicts, w, h, lasers, dictOfBlocks, targetList):
         print("No possible solution for the given parameters!")
         sys.exit()
 
-    return(soln, tries)
+    return(soln, tries, listOfLazors)
 
 
 if __name__ == "__main__":
