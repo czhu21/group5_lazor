@@ -3,6 +3,11 @@
 # Group 5: Aditiya Suru, Casey Zhu, Lincoln Kartchner
 # initialize_board.py
 
+'''
+Reads in .bff file, returning all relevant parameters.
+Also includes nperms() for calculating possible permutations of a list
+'''
+
 import sys
 import operator
 from collections import Counter
@@ -20,7 +25,19 @@ special_blocks = {
 
 def nperms(plist):
     '''
+    Calculates the possible permutations of a list
+
+    **Parameters**
+
+        plist: list
+            The list to permute, made up of elements from valid_grid
+
+    **Returns**
+
+        perms: int
+            The integer number of possible permutations
     '''
+
     num = factorial(len(plist))
     count_vals = Counter(plist).values()
     den = reduce(operator.mul, (factorial(i) for i in count_vals), 1)
@@ -30,16 +47,53 @@ def nperms(plist):
 
 def readBoard():
     '''
-    Reads in .bff file (filename)
-    Parses for given board, including fixed blocks
-    Parses for given available blocks
-    Parses for lazers
-    Parses for targets
-    Initializes appropriate amount of each based on input numbers
+    Reads in .bff file, returning relevant board parameters
+
+    **Parameters**
+
+        None
+
+    **Returns**
+
+        filename: str
+            Name of the .bff file being read in.
+            Includes file extension (.bff)
+
+        initGrid: list
+            List of lists, making up the input (empty) given board
+
+        gridAsList: list
+            initGrid, but reshaped to be a single list
+
+        blocks: list
+            List of tuples, each index corresponding to a different block type
+            Tuples contain 2 values, the letter of the block (str),
+            and the number of those blocks given (int)
+
+        openSpaces: int
+            The number of open 'o' spaces on the initial board
+
+        lasers: list
+            List of tuples, each corresponding to a different laser
+            Tuple indices are int type, corresponding to x, y, dx, dy
+
+        targets: list
+            List of tuples, each corresponding to a different target
+            Tuple indices are x, y coordinates of the target
+
+        w: int
+            Width of the input board
+
+        h: int
+            Height of the input board
+
+        empty: list
+            List of tuples, each corresponding to an 'x' cell
+            Tuple indices are x, y coordinates of the 'x' cell
     '''
 
     print("Welcome to the Lazor board solver!")
-    bfile = input("Enter the name of the board (.bff file) you want to solve: ")
+    bfile = input("Enter the board (.bff file) you want to solve: ")
     filename = bfile.split('\\')[-1]
 
     # Check if file exists, open if it does
@@ -65,8 +119,6 @@ def readBoard():
         print("Grid not initialized!")
         sys.exit()
 
-    # print('Error: GRID STOP not found!')
-
     # Read through grid, grabbing special characters
     blocks = [None, None, None]
     lasers = []
@@ -76,29 +128,35 @@ def readBoard():
 
     for i in f.readlines():
         if start:
+            # Check that first character is a valid string
             try:
                 firstChar = i[0].upper()
             except SyntaxError:
                 print("Error: non-char in grid!")
 
+            # Ignore comments and whitespace
             if firstChar == '#' or firstChar == '\n' or firstChar == '\t':
                 continue
 
+            # Get reflect blocks
             elif firstChar == 'A':
                 line = ''.join(i.split())
                 count = int(line[1:])
                 blocks[0] = ('A', count)
 
+            # Get opaque blocks
             elif firstChar == 'B':
                 line = ''.join(i.split())
                 count = int(line[1:])
                 blocks[1] = ('B', count)
 
+            # Get refract blocks
             elif firstChar == 'C':
                 line = ''.join(i.split())
                 count = int(line[1:])
                 blocks[2] = ('C', count)
 
+            # Get lasers
             elif firstChar == 'L':
                 line = i.split()
                 # Initialize lazor
@@ -108,6 +166,7 @@ def readBoard():
                 dy = int(line[4])
                 lasers.append((x, y, dx, dy))
 
+            # Get targets
             elif firstChar.upper() == 'P':
                 line = i.split()
                 # Initialize target
@@ -167,7 +226,6 @@ def readBoard():
             if initGrid[i][j] == 'x':
                 empty.append((j, i))
 
-    # init_NS, init_EW = get_nsew_coords(initGrid)
     # Get grid width
     w = len(initGrid[0])
     h = len(initGrid)
@@ -177,25 +235,7 @@ def readBoard():
 
 
 if __name__ == "__main__":
-    pass
-    # # TEMPORARY SOLUTION FOR YARN_5, REPLACE WITH ACTUAL SOLUTION LATER
-    # # KEEP FILE AS YARN_5 FOR NOW
-    # bfile = '.\\bff_files\\yarn_5.bff'
-    # filename = bfile.split('\\')[-1]
-    # print('-=-' * 17)
-    # print('Solving board: ' + filename)
-    # t0 = time.time()
+    assert nperms([1, 0, 0, 0]) == 4
 
-    # filename, initGrid, gridAsList, blocks, openSpaces, \
-    #     lasers, targets, w, h = readBoard()
-    # solnGrid = initGrid
-    # plist = get_permute_list(gridAsList, blocks, openSpaces)
-    # tries = generateBoards(plist, gridAsList, w)
-    # tf = time.time()
-    # runtime = tf - t0
-
-    # print('Run finished. Time: %0.5f sec' % (runtime))
-    # print('-=-' * 17)
-    # print(initGrid)
-
-    # text_soln(filename, initGrid, soln, tries, runtime)
+    # Couldn't write unit tests for readBoard() 
+    # since it relies on the user entering a filename
