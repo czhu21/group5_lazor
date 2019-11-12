@@ -50,7 +50,7 @@ def place_blocks(dictofblocks, backgroundimage, width, height, empty):
 		background.save('image_files/board_images/background.png')
 
 
-def plot_lazor_path(listOfLazors, width, height, lasers, targetList):
+def plot_lazor_path(listOfLazors, width, height, lasers, targetList, filename):
 	lazorlist = []
 	for lazor in lasers:
 		lazorlist.append((lazor[0], lazor[1]))
@@ -105,7 +105,9 @@ def plot_lazor_path(listOfLazors, width, height, lasers, targetList):
 	# for lazor in lazorPathList:
 	# for n in range(len(x)):
 		# lin = line.set_data(x[:n], y[:n])
-	fig.savefig('image_files/solution_images/solution.png', bbox_inches='tight', bbox_color='white')
+	fname1 = filename.split('.')[0]
+	fname2 = fname1.split('/')[1]
+	fig.savefig('image_files/solution_images/{}_solution.png'.format(fname2), bbox_inches='tight', bbox_color='white')
 
 
 def animate():
