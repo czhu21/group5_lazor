@@ -21,14 +21,28 @@ from simulate_board import Lazor
 def place_blocks(dictofblocks, width, height, empty):
 	'''
 	place_blocks will generate a background image that will
-	be used by the next function plot_lazor_path.
+	be used by the next function plot_lazor_path. It is
+	currently saved in 'image_files/board_images/background.png'
 
 	** Parameters **
 
 		dictofblocks: dictionary
-			the dictionary containing the solution
+			The dictionary containing the solution
 			positions of all the given blocks
-		backgroundimage
+		width: int
+			The original width parameter of the
+			given board.
+		height: int
+			The original height parameter of the
+			given board.
+		empty: list of tuples
+			A list of coordinates of spaces on the
+			board that are not possible places for
+			blocks to be.
+
+	**Returns**
+
+		None.
 	'''
 	bg_h = height * 81
 	bg_w = width * 81
@@ -71,6 +85,39 @@ def place_blocks(dictofblocks, width, height, empty):
 
 
 def plot_lazor_path(listOfLazors, width, height, lasers, targetList, filename):
+	'''
+	plot_lazor_path creates a line plot of each lazor path
+	from the solution superimposed over the background image
+	created in the previous function and outputs it as a new
+	image named for the board input.
+
+	** Parameters **
+
+		listOfLazors: list of objects
+			A list of lazor objects each containing
+			a list of coordinates and directions for
+			each lazor that forms part of the solution.
+		width: int
+			The original width parameter of the
+			given board.
+		height: int
+			The original height parameter of the
+			given board.
+		lasers: list of tuples
+			lasers contains a list of each laser
+			origin including the initial direction
+			the laser is pointing.
+		targetList: list of tuples
+			A list of target coordinates that
+			must be hit for the board to be solved.
+		filename: string
+			The name of the board file to be solved,
+			e.g. yarn_5.bff
+
+	** Returns **
+
+		None.
+	'''
 	lazorlist = []
 	for lazor in lasers:
 		lazorlist.append((lazor[0], lazor[1]))
@@ -91,9 +138,6 @@ def plot_lazor_path(listOfLazors, width, height, lasers, targetList, filename):
 		for point in lazor.path:
 			new.append(point[0])
 		lazorPathList.append(new)
-
-	
-
 
 	for lazor in lazorPathList:
 		x, y = zip(*lazor)
@@ -122,15 +166,28 @@ def plot_lazor_path(listOfLazors, width, height, lasers, targetList, filename):
 		tb = AnnotationBbox(targetbox, (k, l), bboxprops=target_props)
 		ax.add_artist(tb)
 
-	# for lazor in lazorPathList:
-	# for n in range(len(x)):
-		# lin = line.set_data(x[:n], y[:n])
+	for lazor in lazorPathList:
+		for n in range(len(x)):
+			lin = line.set_data(x[:n], y[:n])
 	fname1 = filename.split('.')[0]
 	fname2 = fname1.split('/')[1]
 	fig.savefig('image_files/solution_images/{}_solution.png'.format(fname2), bbox_inches='tight', bbox_color='white')
 
 
 def animate():
+	'''
+	Optional function that may be called to create a gif of
+	the solution. Currently only works for boards that have
+	only one laser and no refract blocks.
+
+	** Parameters **
+
+		None.
+
+	** Returns **
+
+		None. 
+	'''
 	fp_in = 'image_files/solution_images/Frame0*.png'
 	fp_out = 'solution.gif'
 	img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
