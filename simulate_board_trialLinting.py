@@ -132,6 +132,10 @@ def get_solution(listOfDicts, w, h, lasers, dictOfBlocks, targetList):
         listOfLazors.append(Lazor((i[0], i[1]), (i[2], i[3])))
 
     for dictOfBlocks in listOfDicts:
+        listOfLazors = []
+        for i in lasers:
+        listOfLazors.append(Lazor((i[0], i[1]), (i[2], i[3])))
+        
         for lazor in listOfLazors:
             lazor.path = []
         tries += 1
