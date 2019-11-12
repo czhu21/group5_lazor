@@ -24,7 +24,8 @@ class Block:
     def interact(self, position, direction):
         typ = self.typ
         if typ == 'N':
-            return [((position[0] + direction[0], position[1] + direction[1]), direction)]
+            return [((position[0] + direction[0],
+                      position[1] + direction[1]), direction)]
         elif typ == 'A':
             if position[0] % 2 == 1:
                 return [(position, (direction[0], -direction[1]))]
@@ -34,9 +35,13 @@ class Block:
             return 'END'
         elif typ == 'C':
             if position[0] % 2 == 1:
-                return [(position, (direction[0], -direction[1])), ((position[0] + direction[0], position[1] + direction[1]), direction)]
+                return [(position, (direction[0], -direction[1])),
+                        ((position[0] + direction[0], position[1] +
+                            direction[1]), direction)]
             else:
-                return [(position, (-direction[0], direction[1])), ((position[0] + direction[0], position[1] + direction[1]), direction)]
+                return [(position, (-direction[0], direction[1])),
+                        ((position[0] + direction[0], position[1] +
+                          direction[1]), direction)]
         else:
             print("Wrong block type???")
             pass
@@ -50,7 +55,8 @@ class Lazor:
 
 
 def boardCheck(width, height, listOfLazors, dictOfBlocks, targetList):
-    blockList = [[0 for i in range(2 * width + 1)] for j in range(2 * height + 1)]
+    blockList = [[0 for i in range(2 * width + 1)]
+                 for j in range(2 * height + 1)]
 
     # Initialize all the blocks to 'N' which are normal / "let is pass" blocks
     listOfHits = []
@@ -79,7 +85,8 @@ def boardCheck(width, height, listOfLazors, dictOfBlocks, targetList):
             dx = lazor.path[-1][1][0]
             dy = lazor.path[-1][1][1]
 
-            if cx + dx < 0 or cx + dx > 2 * width or cy + dy < 0 or cy + dy > 2 * height:
+            if (cx + dx < 0 or cx + dx > 2 * width or
+                    cy + dy < 0 or cy + dy > 2 * height):
                 break
 
             if cx % 2 == 0:
@@ -93,28 +100,24 @@ def boardCheck(width, height, listOfLazors, dictOfBlocks, targetList):
                 lazor.path.append(new[0])
 
             if len(new) == 2:
-                listOfLazors.append(Lazor((new[1][0][0], new[1][0][1]), (new[1][1][0], new[1][1][1])))
+                listOfLazors.append(Lazor((new[1][0][0],
+                                           new[1][0][1]), (new[1][1][0],
+                                                           new[1][1][1])))
 
             # Break out of the for loop if the lazor reaches the boundary
-            if new[0][0][0] + new[0][1][0] > 2 * width or new[0][0][0] + new[0][1][0] < 0 or new[0][0][1] + new[0][1][1] > 2 * height or new[0][0][1] + new[0][1][1] < 0:
+            if (new[0][0][0] + new[0][1][0] > 2 * width or
+                new[0][0][0] + new[0][1][0] < 0 or
+                new[0][0][1] + new[0][1][1] > 2 * height or
+                    new[0][0][1] + new[0][1][1]) < 0:
                 condition = True
 
-            # Break out of the loop if the lazor goes into an infinite loop (max points = 100)
-            # if len(lazor.path) > 3:
-                # if lazor.path[-1][0] == lazor.path[-2][0] and lazor.path[-2][0] == lazor.path[-3][0]:
-                #     condition = True
-
-            if len(lazor.path) > 2 and lazor.path[-1][0] == lazor.path[-2][0] and lazor.path[-2][0] == lazor.path[-3][0]:
+            if (len(lazor.path) > 2 and lazor.path[-1][0] ==
+                    lazor.path[-2][0] and
+                    lazor.path[-2][0] == lazor.path[-3][0]):
                 condition = True
 
         for hits in lazor.path:
             listOfHits.append(hits[0])
-        # print(len(lazor.path), "\n", lazor.path)
-
-    # for lazor in listOfLazors:
-    #   lazor.path = []
-
-    # print("Nos of lazers: ", len(listOfLazors))
 
     condition = True
     for target in targetList:
@@ -135,7 +138,7 @@ def get_solution(listOfDicts, w, h, lasers, dictOfBlocks, targetList):
         listOfLazors = []
         for i in lasers:
             listOfLazors.append(Lazor((i[0], i[1]), (i[2], i[3])))
-        
+
         for lazor in listOfLazors:
             lazor.path = []
         tries += 1
