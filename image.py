@@ -18,184 +18,215 @@ import glob
 import os
 from simulate_board import Lazor
 
+
 def place_blocks(dictofblocks, width, height, empty):
-	'''
-	place_blocks will generate a background image that will
-	be used by the next function plot_lazor_path. It is
-	currently saved in 'image_files/board_images/background.png'
+    '''
+    place_blocks will generate a background image that will
+    be used by the next function plot_lazor_path. It is
+    currently saved in 'image_files/board_images/background.png'
 
-	** Parameters **
+    ** Parameters **
 
-		dictofblocks: dictionary
-			The dictionary containing the solution
-			positions of all the given blocks
-		width: int
-			The original width parameter of the
-			given board.
-		height: int
-			The original height parameter of the
-			given board.
-		empty: list of tuples
-			A list of coordinates of spaces on the
-			board that are not possible places for
-			blocks to be.
+        dictofblocks: dictionary
+            The dictionary containing the solution
+            positions of all the given blocks
+        width: int
+            The original width parameter of the
+            given board.
+        height: int
+            The original height parameter of the
+            given board.
+        empty: list of tuples
+            A list of coordinates of spaces on the
+            board that are not possible places for
+            blocks to be.
 
-	**Returns**
+    **Returns**
 
-		None.
-	'''
-	bg_h = height * 81
-	bg_w = width * 81
-	background = Image.new('RGB', (bg_w, bg_h), (96, 86, 89))
-	absorb = Image.open('image_files/board_images/absorb.png')
-	reflect = Image.open('image_files/board_images/reflect.png')
-	refract = Image.open('image_files/board_images/refract.png')
-	openspace = Image.open('image_files/board_images/openspace.png')
-	bg_w, bg_h = background.size
-	xscalefactor = int(bg_w/width)
-	yscalefactor = int(bg_h/height)
-	coordinate_list = []
-	for i in range(width):
-		for j in range(height):
-			coordinate_list.append((i, j))
-	for coordinate, block in dictofblocks.items():
-		x, y = coordinate
-		newx = 0
-		newy = 0
-		if block == 'A':
-			background.paste(reflect, (x*xscalefactor, y*yscalefactor))
-			background.save('image_files/board_images/background.png')
-		elif block == 'B':
-			background.paste(absorb, (x*xscalefactor, y*yscalefactor))
-			background.save('image_files/board_images/background.png')
-		elif block == 'C':
-			background.paste(refract, ((x * xscalefactor), y * yscalefactor))
-			background.save('image_files/board_images/background.png')
-	open_spaces = []
-	for coordinate in dictofblocks.keys():
-		if coordinate in coordinate_list:
-			coordinate_list.remove(coordinate)
-	for (i, j) in empty:
-		if (i, j) in coordinate_list:
-			coordinate_list.remove((i, j))
-	for coordinate in coordinate_list:
-		x, y = coordinate
-		background.paste(openspace, ((x * xscalefactor), y * yscalefactor))
-		background.save('image_files/board_images/background.png')
+        None.
+    '''
+
+    # Scales up the image to be larger than pixel size.
+    bg_h = height * 81
+    bg_w = width * 81
+
+    # Creates a new image to serve as the background.
+    background = Image.new('RGB', (bg_w, bg_h), (96, 86, 89))
+
+    # Loads the separate block image files
+    absorb = Image.open('image_files/board_images/absorb.png')
+    reflect = Image.open('image_files/board_images/reflect.png')
+    refract = Image.open('image_files/board_images/refract.png')
+    openspace = Image.open('image_files/board_images/openspace.png')
+    xscalefactor = int(bg_w/width)
+    yscalefactor = int(bg_h/height)
+
+    # Creates a list of coordinates for the whole board
+    coordinate_list = []
+    for i in range(width):
+        for j in range(height):
+            coordinate_list.append((i, j))
+
+    # Places block images at required locations
+    for coordinate, block in dictofblocks.items():
+        x, y = coordinate
+        newx = 0
+        newy = 0
+        if block == 'A':
+            background.paste(reflect, (x*xscalefactor, y*yscalefactor))
+            background.save('image_files/board_images/background.png')
+        elif block == 'B':
+            background.paste(absorb, (x*xscalefactor, y*yscalefactor))
+            background.save('image_files/board_images/background.png')
+        elif block == 'C':
+            background.paste(refract, ((x * xscalefactor), y * yscalefactor))
+            background.save('image_files/board_images/background.png')
+
+    # Removes blocks/closed spaces from coordinate list
+    # and places open space images at required locations
+    open_spaces = []
+    for coordinate in dictofblocks.keys():
+        if coordinate in coordinate_list:
+            coordinate_list.remove(coordinate)
+    for (i, j) in empty:
+        if (i, j) in coordinate_list:
+            coordinate_list.remove((i, j))
+    for coordinate in coordinate_list:
+        x, y = coordinate
+        background.paste(openspace, ((x * xscalefactor), y * yscalefactor))
+        background.save('image_files/board_images/background.png')
 
 
 def plot_lazor_path(listOfLazors, width, height, lasers, targetList, filename):
-	'''
-	plot_lazor_path creates a line plot of each lazor path
-	from the solution superimposed over the background image
-	created in the previous function and outputs it as a new
-	image named for the board input.
+    '''
+    plot_lazor_path creates a line plot of each lazor path
+    from the solution superimposed over the background image
+    created in the previous function and outputs it as a new
+    image named for the board input.
 
-	** Parameters **
+    ** Parameters **
 
-		listOfLazors: list of objects
-			A list of lazor objects each containing
-			a list of coordinates and directions for
-			each lazor that forms part of the solution.
-		width: int
-			The original width parameter of the
-			given board.
-		height: int
-			The original height parameter of the
-			given board.
-		lasers: list of tuples
-			lasers contains a list of each laser
-			origin including the initial direction
-			the laser is pointing.
-		targetList: list of tuples
-			A list of target coordinates that
-			must be hit for the board to be solved.
-		filename: string
-			The name of the board file to be solved,
-			e.g. yarn_5.bff
+        listOfLazors: list of objects
+            A list of lazor objects each containing
+            a list of coordinates and directions for
+            each lazor that forms part of the solution.
+        width: int
+            The original width parameter of the
+            given board.
+        height: int
+            The original height parameter of the
+            given board.
+        lasers: list of tuples
+            lasers contains a list of each laser
+            origin including the initial direction
+            the laser is pointing.
+        targetList: list of tuples
+            A list of target coordinates that
+            must be hit for the board to be solved.
+        filename: string
+            The name of the board file to be solved,
+            e.g. yarn_5.bff
 
-	** Returns **
+    ** Returns **
 
-		None.
-	'''
-	lazorlist = []
-	for lazor in lasers:
-		lazorlist.append((lazor[0], lazor[1]))
-	normal = Image.open('image_files/board_images/background.png')
-	rotated = normal.rotate(180)
-	flipped = rotated.transpose(Image.FLIP_LEFT_RIGHT)
-	flipped.save('image_files/board_images/background.png')
-	fig, ax = plt.subplots()
-	img = plt.imread('image_files/board_images/background.png')
-	ax.imshow(img, extent=[0, width*2, 0, height*2])
-	plt.axis('off')
-	ax.set_ylim(ax.get_ylim()[::-1])
+        None.
+    '''
 
-	lazorPathList = []
+    # Converts the laser tuple to a tuple of
+    # just the coordinates
+    lazorlist = []
+    for lazor in lasers:
+        lazorlist.append((lazor[0], lazor[1]))
 
-	for lazor in listOfLazors:
-		new = []
-		for point in lazor.path:
-			new.append(point[0])
-		lazorPathList.append(new)
+    # Handles plotting using the top left as the origin
+    # instead of the bottom right by rotating
+    # and transposing the background image.
+    normal = Image.open('image_files/board_images/background.png')
+    rotated = normal.rotate(180)
+    flipped = rotated.transpose(Image.FLIP_LEFT_RIGHT)
+    flipped.save('image_files/board_images/background.png')
 
-	for lazor in lazorPathList:
-		x, y = zip(*lazor)
-		line, = ax.plot(x, y, color='r')
+    # Creates the plot over the background image
+    fig, ax = plt.subplots()
+    img = plt.imread('image_files/board_images/background.png')
+    ax.imshow(img, extent=[0, width*2, 0, height*2])
+    plt.axis('off')
+    ax.set_ylim(ax.get_ylim()[::-1])
 
-	
-	target_props = dict(boxstyle="circle,pad=0.001",
-						fc="black", ec="b", lw=0.01)
-	lazor_props = dict(boxstyle="circle,pad=0.001", fc="red", ec="r", lw=0.01)
+    # Creates the coordinate list of the lazor path
+    # and then plots it as a line plot.
+    lazorPathList = []
+    for lazor in listOfLazors:
+        new = []
+        for point in lazor.path:
+            new.append(point[0])
+        lazorPathList.append(new)
 
-	lazorimg = plt.imread('image_files/board_images/lazororigin.png')
+    for lazor in lazorPathList:
+        x, y = zip(*lazor)
+        line, = ax.plot(x, y, color='r')
 
-	lazorbox = OffsetImage(lazorimg, zoom=0.25)
-	lazorbox.image.axes = ax
-	for lazor in lazorlist:
-		i, j = lazor
-		lb = AnnotationBbox(lazorbox, (i, j), bboxprops=lazor_props)
-		ax.add_artist(lb)
+    # This code handles placing the targets
+    # and lazor origins as annotations to the original
+    # plot.
+    target_props = dict(boxstyle="circle,pad=0.001",
+                        fc="black", ec="b", lw=0.01)
+    lazor_props = dict(boxstyle="circle,pad=0.001", fc="red", ec="r", lw=0.01)
 
-	targetimg = plt.imread('image_files/board_images/targetimage.png')
+    lazorimg = plt.imread('image_files/board_images/lazororigin.png')
 
-	targetbox = OffsetImage(targetimg, zoom=0.5)
-	targetbox.image.axes = ax
-	for target in targetList:
-		k, l = target
-		tb = AnnotationBbox(targetbox, (k, l), bboxprops=target_props)
-		ax.add_artist(tb)
+    lazorbox = OffsetImage(lazorimg, zoom=0.25)
+    lazorbox.image.axes = ax
+    for lazor in lazorlist:
+        i, j = lazor
+        lb = AnnotationBbox(lazorbox, (i, j), bboxprops=lazor_props)
+        ax.add_artist(lb)
 
-	for lazor in lazorPathList:
-		for n in range(len(x)):
-			lin = line.set_data(x[:n], y[:n])
-	fname1 = filename.split('.')[0]
-	fname2 = fname1.split('/')[1]
-	fig.savefig('image_files/solution_images/{}_solution.png'.format(fname2), bbox_inches='tight', bbox_color='white')
+    targetimg = plt.imread('image_files/board_images/targetimage.png')
+
+    targetbox = OffsetImage(targetimg, zoom=0.5)
+    targetbox.image.axes = ax
+    for target in targetList:
+        k, l = target
+        tb = AnnotationBbox(targetbox, (k, l), bboxprops=target_props)
+        ax.add_artist(tb)
+
+    # Handles updating the line plot for the animate function
+    # if it will be used. Only works for one lazor, and no refract blocks.
+    for lazor in lazorPathList:
+        for n in range(len(x)):
+            lin = line.set_data(x[:n], y[:n])
+    fname1 = filename.split('.')[0]
+    fname2 = fname1.split('/')[1]
+    fig.savefig('image_files/solution_images/{}_solution.png'.format(fname2),
+                bbox_inches='tight', bbox_color='white')
 
 
 def animate():
-	'''
-	Optional function that may be called to create a gif of
-	the solution. Currently only works for boards that have
-	only one laser and no refract blocks.
+    '''
+    Optional function that may be called to create a gif of
+    the solution. Currently only works for boards that have
+    only one laser and no refract blocks.
 
-	** Parameters **
+    ** Parameters **
 
-		None.
+        None.
 
-	** Returns **
+    ** Returns **
 
-		None. 
-	'''
-	fp_in = 'image_files/solution_images/Frame0*.png'
-	fp_out = 'solution.gif'
-	img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
-	img.save(fp=fp_out, format='GIF', append_images=imgs,
-			 save_all=True, duration=75, loop=3)
-	files = glob.glob(r'image_files/solution_images/*')
-	for items in files:
-		os.remove(items)
+        None.
+    '''
+    fp_in = 'image_files/solution_images/Frame0*.png'
+    fp_out = 'solution.gif'
+    img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
+    img.save(fp=fp_out, format='GIF', append_images=imgs,
+             save_all=True, duration=75, loop=3)
+    files = glob.glob(r'image_files/solution_images/*')
+    for items in files:
+        os.remove(items)
 
 if __name__ == '__main__':
-	pass
+    # Unit testing doesn't apply for image.py
+    # as no functions return anything, and both
+    # rely on the filename input from readBoard()
+    pass
