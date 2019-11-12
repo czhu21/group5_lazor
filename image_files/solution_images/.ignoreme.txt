@@ -1,1 +1,3 @@
-
+This is a placeholder file, since Github doesn't allow for empty directories inside the repository.
+Please ignore me.
+Have a nice day :^)
